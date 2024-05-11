@@ -25,6 +25,14 @@ const client = new MongoClient(uri, {
 });
 async function run() {
   try {
+    const roomsCollection = client.db("hotels").collection("rooms");
+
+    // get  all room data
+    app.get("/rooms", async (req, res) => {
+      const result = await roomsCollection.find().toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
