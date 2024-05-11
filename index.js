@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 9000;
 const app = express();
@@ -26,12 +27,38 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const roomsCollection = client.db("hotels").collection("rooms");
+    const reviewsCollection = client.db("hotels").collection("reviews");
 
     // get  all room data
     app.get("/rooms", async (req, res) => {
       const result = await roomsCollection.find().toArray();
       res.send(result);
     });
+
+    // Get a single room data from db using room id
+    app.get("/room/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await roomsCollection.findOne(query);
+      res.send(result);
+    });
+    // Post a room review
+    app.post("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewsCollection.findOne(query);
+      res.send(result);
+    });
+
+    // REVIEW-  Get a room review
+    app.get("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewsCollection.findOne(query);
+      res.send(result);
+    });
+
+    //get all bookings by a user
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
