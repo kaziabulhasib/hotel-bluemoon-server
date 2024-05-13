@@ -42,21 +42,37 @@ async function run() {
       const result = await roomsCollection.findOne(query);
       res.send(result);
     });
-    // Post a room review
-    app.post("/review/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await reviewsCollection.findOne(query);
+
+    //REVIEW-  Post a room review
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.send(result);
+    });
+
+    // REVIEW- GET ALL REVIEW DATA
+
+    app.get("/reviews", async (req, res) => {
+      const result = await reviewsCollection.find().toArray();
       res.send(result);
     });
 
     // REVIEW-  Get a room review
-    app.get("/review/:id", async (req, res) => {
+    app.get("/reviews/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await reviewsCollection.findOne(query);
-      res.send(result);
+      const reviewCount = await reviewsCollection.countDocuments();
+      // res.send(result);
+      res.send({ review: result, totalCount: reviewCount });
     });
+
+    // // REVIEW - GET review count for a room
+    // app.get("/reviews/count/:id", async (req, res) => {
+    //   const roomId = req.params.id;
+    //   const count = await reviewsCollection.countDocuments({ roomId });
+    //   res.json({ count });
+    // });
 
     //get all bookings by a user
 
