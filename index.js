@@ -7,7 +7,11 @@ const port = process.env.PORT || 9000;
 const app = express();
 
 const corsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://hotel-bluemoon.web.app",
+  ],
   Credentials: true,
   optionSuccessStatus: 200,
 };
@@ -28,6 +32,7 @@ async function run() {
   try {
     const roomsCollection = client.db("hotels").collection("rooms");
     const reviewsCollection = client.db("hotels").collection("reviews");
+    const bookingsCollection = client.db("hotels").collection("bookings");
 
     // get  all room data
     app.get("/rooms", async (req, res) => {
@@ -67,14 +72,28 @@ async function run() {
       res.send({ review: result, totalCount: reviewCount });
     });
 
-    // // REVIEW - GET review count for a room
-    // app.get("/reviews/count/:id", async (req, res) => {
-    //   const roomId = req.params.id;
-    //   const count = await reviewsCollection.countDocuments({ roomId });
-    //   res.json({ count });
-    // });
+    // post booking room
+    app.post("/bookings", async (req, res) => {
+      const book = req.body;
+      const userEmail = book.userEmail;
+      const result = await bookingsCollection.insertOne(book);
 
-    //get all bookings by a user
+      res.send(result);
+    });
+    // all bookings data
+    app.get("/bookings", async (req, res) => {
+      const result = await bookingsCollection.find().toArray();
+      res.send(result);
+    });
+    // Get user booking by email:
+
+    app.get("/bookings/:email", async (req, res) => {
+      console.log(req.params.email);
+      const result = await bookingsCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
