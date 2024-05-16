@@ -85,7 +85,7 @@ async function run() {
       const result = await bookingsCollection.find().toArray();
       res.send(result);
     });
-    // Get user booking by email:
+    // Get user booking by email
 
     app.get("/bookings/:email", async (req, res) => {
       const email = req.params.email;
