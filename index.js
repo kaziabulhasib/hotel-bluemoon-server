@@ -3,7 +3,7 @@ const cors = require("cors");
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
-const port = process.env.PORT || 9000;
+const port = process.env.PORT || 5000;
 const app = express();
 
 const corsOptions = {
@@ -75,7 +75,7 @@ async function run() {
     // post booking room
     app.post("/bookings", async (req, res) => {
       const book = req.body;
-      const userEmail = book.userEmail;
+
       const result = await bookingsCollection.insertOne(book);
 
       res.send(result);
@@ -88,10 +88,18 @@ async function run() {
     // Get user booking by email:
 
     app.get("/bookings/:email", async (req, res) => {
-      console.log(req.params.email);
+      const email = req.params.email;
       const result = await bookingsCollection
-        .find({ email: req.params.email })
+        .find({ userEmail: email })
         .toArray();
+      res.send(result);
+    });
+
+    // delete operation--
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { roomId: id };
+      const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     });
 
